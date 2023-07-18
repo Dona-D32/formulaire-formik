@@ -14,7 +14,6 @@ function App() {
   });
 
   const handleSubmit = (values) => {
-    // Le formulaire est valide, vous pouvez effectuer l'action souhaitée ici
     console.log('Formulaire soumis avec succès !', values);
   };
 

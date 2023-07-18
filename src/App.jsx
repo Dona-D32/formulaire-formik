@@ -1,99 +1,96 @@
-import React, { useState } from "react";
-import { Form, Button, Modal } from "react-bootstrap";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import React from 'react';
+import { Container, Card, Button, Form } from 'react-bootstrap';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import './App.css';
 
-const App = () => {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showModal, setShowModal] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+function App() {
+  const validationSchema = Yup.object().shape({
+    cardNumber: Yup.string().required('Le numéro de carte est obligatoire').matches(/^[0-9]{16}$/, 'Le numéro de carte doit contenir 16 chiffres'),
+    cardName: Yup.string().required('Le nom du titulaire de la carte est obligatoire'),
+    expiryDate: Yup.string().required('La date d\'expiration est obligatoire').matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, 'La date d\'expiration doit être au format MM/YY'),
+    cvc: Yup.string().required('Le CVC est obligatoire').matches(/^[0-9]{3}$/, 'Le CVC doit contenir 3 chiffres'),
+  });
 
-    setShowModal(true);
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
+  const handleSubmit = (values) => {
+    // Le formulaire est valide, vous pouvez effectuer l'action souhaitée ici
+    console.log('Formulaire soumis avec succès !', values);
   };
 
   return (
-    <section className="showcase">
-      <div className="overlay">
-        <article>
-          <h1>Learning to code by watching others</h1>
-          <p>
-            See how experienced developers solve problems in real-time.
-            Watching scripted tutorials is great, but understanding how
-            developers think is invaluable.
-          </p>
-        </article>
+    <Container>
+      <Card className="mt-4 p-4">
+        <h1 className="mb-4">Card Details</h1>
+        <Formik
+          initialValues={{
+            cardNumber: '',
+            cardName: '',
+            expiryDate: '',
+            cvc: '',
+          }}
+          validationSchema={validationSchema}
+          onSubmit={handleSubmit}
+        >
+          {({ values, handleChange, handleSubmit, errors }) => (
+            <Form onSubmit={handleSubmit}>
+              <Form.Group>
+                <Form.Label>Card Number</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="cardNumber"
+                  value={values.cardNumber}
+                  onChange={handleChange}
+                  isInvalid={!!errors.cardNumber}
+                />
+                <Form.Control.Feedback type="invalid">{errors.cardNumber}</Form.Control.Feedback>
+              </Form.Group>
 
-        <article>
-          <p className="tag">
-            <strong>Try it free 7 days</strong> then $20/mo. thereafter
-          </p>
+              <Form.Group>
+                <Form.Label>Card Name</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="cardName"
+                  value={values.cardName}
+                  onChange={handleChange}
+                  isInvalid={!!errors.cardName}
+                />
+                <Form.Control.Feedback type="invalid">{errors.cardName}</Form.Control.Feedback>
+              </Form.Group>
 
-          <Form className="form" onSubmit={handleSubmit}>
-            <Form.Control
-              type="text"
-              placeholder="First Name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
+              <Form.Group>
+                <Form.Label>Expiry Date</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="expiryDate"
+                  value={values.expiryDate}
+                  onChange={handleChange}
+                  isInvalid={!!errors.expiryDate}
+                />
+                <Form.Control.Feedback type="invalid">{errors.expiryDate}</Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Control
-              type="text"
-              placeholder="Last Name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
+              <Form.Group>
+                <Form.Label>CVC</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="cvc"
+                  value={values.cvc}
+                  onChange={handleChange}
+                  isInvalid={!!errors.cvc}
+                />
+                <Form.Control.Feedback type="invalid">{errors.cvc}</Form.Control.Feedback>
+              </Form.Group>
 
-            <Form.Control
-              type="email"
-              placeholder="Email Address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
-            <Form.Control
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-
-            <Button type="submit">Claim your free trial</Button>
-
-            <Form.Text>
-              By clicking the button, you are agreeing to our{" "}
-              <span>Terms and Services</span>
-            </Form.Text>
-          </Form>
-        </article>
-      </div>
-
-      <Modal show={showModal} onHide={closeModal}>
-        <Modal.Header closeButton>
-          <Modal.Title>Form Values</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>First Name: {firstName}</p>
-          <p>Last Name: {lastName}</p>
-          <p>Email: {email}</p>
-          <p>Password: {password}</p>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={closeModal}>
-            Close
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </section>
+              <Button variant="primary" type="submit">
+                Submit
+              </Button>
+            </Form>
+          )}
+        </Formik>
+      </Card>
+    </Container>
   );
-};
+}
 
 export default App;
